@@ -1,0 +1,11 @@
+for initialization block:
+
+add references for each pointer assigned to allocated memory
+
+for trivial assignments:
+if lvalue is in hash remove reference to lvalue before assignment
+if rvalue is in hash add reference to rvalue after assignment
+
+on function exit:(how?)
+
+remove references for each pointer from that function in the hash
