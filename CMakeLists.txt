@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
-project(garbage C)
+project(garbage)
 
-set(CMAKE_C_STANDARD 90)
+set(CMAKE_CXX_STANDARD 11)
 
-add_executable(garbage src/main.c)
+add_executable(garbage src/main.cpp src/HashMap.cpp)
