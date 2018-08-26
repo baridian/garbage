@@ -13,10 +13,7 @@ public:
 	Ref(T *ref)
 	{
 		ptr = ref;
-		int oldNum = 0;
-		if (allocated.contains(&ptr))
-			oldNum = *(int *)allocated.read(&ptr);
-		allocated.write(&ptr,&++oldNum);
+		retain();
 	}
 
 
@@ -24,27 +21,14 @@ public:
 	Ref (const Ref<T> &old_obj)
 	{
 		this->ptr = old_obj.ptr;
-		int oldNum = 0;
-		if(allocated.contains(&ptr))
-			oldNum  = *(int *)allocated.read(&ptr);
-		allocated.write(&ptr,&++oldNum);
+		retain();
 	}
 
 	void operator=(T *ref)
 	{
-		int oldNum = *(int *)allocated.read(&ptr);
-		if(--oldNum == 0)
-		{
-			allocated.erase(&ptr);
-			delete(ptr);
-		}
-		else
-			allocated.write(&ptr,&oldNum);
-		oldNum = 0;
+		release();
 		ptr = ref;
-		if (allocated.contains(&ptr))
-			oldNum = *(int *)allocated.read(&ptr);
-		allocated.write(&ptr,&++oldNum);
+		retain();
 	}
 
 	void operator=(Ref<T> ref)
@@ -68,21 +52,42 @@ public:
 
 	~Ref()
 	{
-		int oldNum = *(int *)allocated.read(&ptr);
-		if(--oldNum == 0)
-		{
-			if(ptr != NULL)
-				delete(ptr);
-			allocated.erase(&ptr);
-			return;
-		}
-		allocated.write(&ptr,&oldNum);
+		release();
 	}
 
 protected:
 	T *ptr;
 private:
 	static HashMap allocated;
+
+	void retain()
+	{
+		int *countP = (int *)allocated.read(&ptr);
+		int oldCount = 0;
+		if(countP != nullptr)
+			oldCount =  *countP;
+		allocated.write(&ptr,&++oldCount);
+	}
+
+	void release()
+	{
+		int *countP = (int *)allocated.read(&ptr);
+		int count;
+		if(countP == nullptr)
+		{
+			fprintf(stderr,"ERROR: Attempted to release release non-allocated block\n");
+			exit(1);
+		}
+		count = *countP;
+		if(--count == 0)
+		{
+			if(ptr != nullptr)
+				delete(ptr);
+			allocated.erase(&ptr);
+		}
+		else
+			allocated.write(&ptr,&count);
+	}
 };
 
 template <typename T>

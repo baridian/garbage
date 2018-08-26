@@ -45,7 +45,7 @@ public:
 		if(head.p() == nullptr)
 			exit(1);
 		if(index==0)
-			*head->data = data;
+			head->data = data;
 		else if(index > 0 && index < length())
 		{
 			for(int i=0;i<index;i++)

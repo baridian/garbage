@@ -3,10 +3,10 @@
 
 int main()
 {
-	char string[] = "test";
-	List<char> list(string,strlen(string) + 1);
-	list.insert(1,'a');
-	list.to_a(string);
-	printf("%s\n",string);
+	int a[] = {1,2,3};
+	List<int> list(a,3);
+	list.erase(1);
+	list.insert(1,5);
+	list.to_a(a);
 	return 0;
 }
