@@ -16,11 +16,9 @@ public:
 		retain();
 	}
 
-
-
 	Ref (const Ref<T> &old_obj)
 	{
-		this->ptr = old_obj.ptr;
+		ptr = old_obj.ptr;
 		retain();
 	}
 
@@ -36,18 +34,23 @@ public:
 		*this=ref.p();
 	}
 
-	T *p()
-	{
-		return ptr;
-	}
 	T *operator->()
 	{
 		return ptr;
 	}
-
 	T &operator*()
 	{
 		return *ptr;
+	}
+
+	T &operator[](int index)
+	{
+		return **this[index];
+	}
+
+	T *p()
+	{
+		return ptr;
 	}
 
 	~Ref()
