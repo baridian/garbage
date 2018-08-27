@@ -72,14 +72,7 @@ void HashMap::rescaleHash()
 	int oldLength = allocated;
 	int i = 0;
 	int newIndex;
-	bool hasGarbage = false;
-	for(int i=0;i<oldLength;i++)
-		if(oldTable[i].isOccupied == garbage)
-		{
-			hasGarbage = true;
-			break;
-		}
-	if (indexesUsed > allocated * 0.7 || (indexesUsed < allocated * 0.7 / 2 && allocated > START_SIZE) || hasGarbage)
+	if (indexesUsed > allocated * 0.7 || (indexesUsed < allocated * 0.7 / 2 && allocated > START_SIZE))
 	{
 		if(indexesUsed > allocated * 0.7)
 			allocated *= 2;
@@ -100,12 +93,6 @@ void HashMap::rescaleHash()
 					newIndex = newIndex == allocated - 1 ? 0 : newIndex + 1;
 				table[newIndex] = oldTable[i];
 			}
-			if(oldTable[i].isOccupied == garbage)
-			{
-				free(oldTable[i].data);
-				free(oldTable[i].key);
-				indexesUsed--;
-			}
 		}
 		free(oldTable);
 		rescaled = true;
@@ -118,7 +105,7 @@ void HashMap::write(void *key, void *value)
 	int start;
 	if(lastKey != nullptr && !stringKey && memcmp(lastKey,key,keySize) == 0 && !rescaled)
 	{
-		if(table[lastIndex].isOccupied == no)
+		if(table[lastIndex].isOccupied != yes)
 		{
 			table[lastIndex].data = malloc(valueSize);
 			table[lastIndex].key = malloc(keySize);
@@ -133,7 +120,7 @@ void HashMap::write(void *key, void *value)
 	else
 		index = hash(key);
 	start = index;
-	while (table[index].isOccupied != no)
+	while (table[index].isOccupied == yes)
 	{
 		if(!stringKey && memcmp(table[index].key,key,keySize) == 0)
 			break;
@@ -148,7 +135,7 @@ void HashMap::write(void *key, void *value)
 	}
 	if(!stringKey)
 	{
-		if(table[index].isOccupied == no)
+		if(table[index].isOccupied != yes)
 			table[index].key = malloc(keySize);
 		memcpy(table[index].key, key,keySize);
 	}
@@ -159,7 +146,7 @@ void HashMap::write(void *key, void *value)
 		table[index].key = malloc(strlen((char *)key) + 1);
 		strcpy((char *)table[index].key,(char *)key);
 	}
-	if(table[index].isOccupied == no)
+	if(table[index].isOccupied != yes)
 	{
 		table[index].data = malloc(valueSize);
 		indexesUsed++;
@@ -193,7 +180,10 @@ void HashMap::erase(void *key)
 	}
 	if(table[index].isOccupied == no)
 		return;
-	table[index].isOccupied = garbage;
+	table[index].isOccupied = freed;
+	free(table[index].data);
+	free(table[index].key);
+	indexesUsed--;
 	rescaleHash();
 }
 

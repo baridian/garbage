@@ -1,12 +1,20 @@
 #include <cstdio>
 #include "List.h"
 
+List<char> getList()
+{
+	char a[] = "hello world!\n";
+	List<char> list(a,strlen(a)+1);
+	list.erase(2);
+	list.insert(1,'E');
+	return list;
+}
+
 int main()
 {
-	int a[] = {1,2,3};
-	List<int> list(a,3);
-	list.erase(1);
-	list.insert(1,5);
+	auto list = getList();
+	char a[40];
 	list.to_a(a);
+	printf("%s\n",a);
 	return 0;
 }

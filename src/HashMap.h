@@ -3,7 +3,7 @@
 
 #include <cstdlib>
 
-typedef enum state{yes,no,garbage} state;
+typedef enum state{yes,no,freed} state;
 
 typedef struct hashNode
 {

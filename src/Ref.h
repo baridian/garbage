@@ -57,6 +57,7 @@ public:
 
 protected:
 	T *ptr;
+
 private:
 	static HashMap allocated;
 
