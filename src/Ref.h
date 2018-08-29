@@ -24,6 +24,7 @@ public:
 
 	void operator=(T *ref)
 	{
+		Ref<T> old(this->p());
 		release();
 		ptr = ref;
 		retain();

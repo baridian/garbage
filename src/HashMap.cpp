@@ -18,7 +18,7 @@ unsigned HashMap::hashString(void *key)
 
 unsigned HashMap::hash(void *key)
 {
-	return (*(unsigned *)key >> 3u) % allocated;
+	return (*(unsigned *)key >> 5u) % allocated;
 }
 
 HashMap::HashMap(size_t keySize, size_t valueSize, bool stringKey)
